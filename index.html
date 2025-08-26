@@ -578,7 +578,11 @@
 
     document.getElementById('resetTemplateBtn').onclick = ()=>{
       if(!confirm('Reset the checklist for this project to the default template?')) return;
-      const p = getActive(); p.template = structuredClone(DEFAULT_TEMPLATE); touch(); renderChecklist(); renderProgress();
+      const p = getActive(); if (!p) return;
+      p.template = structuredClone(DEFAULT_TEMPLATE);
+      p.updatedAt = Date.now();
+      // Save immediately so changes stick and UI re-renders
+      persist();
     };
 
     document.getElementById('exportBtn').onclick = ()=>{
