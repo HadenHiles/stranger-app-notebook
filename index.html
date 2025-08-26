@@ -6,6 +6,68 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Stranger App Series — Production Notebook</title>
   <style>
+    /* Checklist mobile tweaks */
+    @media (max-width:600px) {
+
+      /* Project title full width */
+      #checklist .panel-header.split-2 {
+        display: block;
+      }
+
+      #checklist .panel-header.split-2>div {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+
+      #checklist .panel-header.split-2>div:last-child {
+        margin-bottom: 0;
+      }
+
+      #checklist .split-2 {
+        grid-template-columns: 1fr;
+      }
+
+      #checklist .split-2>div {
+        width: 100%;
+      }
+
+      #checklist .split-2>div>label {
+        display: block;
+      }
+
+      #checklist .panel-header .note {
+        font-size: 14px;
+      }
+
+      /* Section controls icon-only */
+      .section .section-controls-text {
+        display: none;
+      }
+
+      .section .section-controls-icon {
+        display: inline-block !important;
+      }
+
+      /* Checklist item controls icon-only */
+      .item-head .item-btn-text {
+        display: none;
+      }
+
+      .item-head .item-btn-icon {
+        display: inline-block !important;
+      }
+    }
+
+    @media (min-width:601px) {
+      .section .section-controls-icon {
+        display: none !important;
+      }
+
+      .item-head .item-btn-icon {
+        display: none !important;
+      }
+    }
+
     :root {
       --bg: #0f1221;
       --bg-soft: #141733;
@@ -777,10 +839,24 @@
         const sec = document.createElement('div'); sec.className = 'section';
         const h = document.createElement('div'); h.style.display = 'flex'; h.style.justifyContent = 'space-between'; h.style.alignItems = 'center'; h.style.gap = '8px';
         const title = document.createElement('h3'); title.textContent = section.title; h.appendChild(title);
-        const right = document.createElement('div'); right.style.display = 'flex'; right.style.gap = '8px';
-        const colBtn = document.createElement('button'); colBtn.type = 'button'; colBtn.textContent = section.collapsed ? '▶ Expand' : '▼ Collapse'; colBtn.className = 'ghost'; colBtn.onclick = () => { section.collapsed = !section.collapsed; touch(); renderChecklist(); };
-        const addBtn = document.createElement('button'); addBtn.type = 'button'; addBtn.textContent = '＋ Add Item'; addBtn.onclick = () => addItem(sIdx);
-        const delBtn = document.createElement('button'); delBtn.type = 'button'; delBtn.textContent = '🗑️ Remove Section'; delBtn.className = 'danger'; delBtn.onclick = () => removeSection(sIdx);
+        const right = document.createElement('div'); right.style.display = 'flex'; right.style.gap = '8px'; right.className = 'section-controls';
+        // Section controls: icon and text for each button
+        const colBtn = document.createElement('button'); colBtn.type = 'button'; colBtn.className = 'ghost'; colBtn.onclick = () => { section.collapsed = !section.collapsed; touch(); renderChecklist(); };
+        // Icon for collapse/expand
+        const colIcon = document.createElement('span'); colIcon.className = 'section-controls-icon'; colIcon.setAttribute('aria-label', section.collapsed ? 'Expand' : 'Collapse'); colIcon.textContent = section.collapsed ? '▶' : '▼';
+        const colText = document.createElement('span'); colText.className = 'section-controls-text'; colText.textContent = section.collapsed ? 'Expand' : 'Collapse';
+        colBtn.append(colIcon, colText);
+
+        const addBtn = document.createElement('button'); addBtn.type = 'button'; addBtn.onclick = () => addItem(sIdx);
+        const addIcon = document.createElement('span'); addIcon.className = 'section-controls-icon'; addIcon.setAttribute('aria-label', 'Add Item'); addIcon.textContent = '＋';
+        const addText = document.createElement('span'); addText.className = 'section-controls-text'; addText.textContent = 'Add Item';
+        addBtn.append(addIcon, addText);
+
+        const delBtn = document.createElement('button'); delBtn.type = 'button'; delBtn.className = 'danger'; delBtn.onclick = () => removeSection(sIdx);
+        const delIcon = document.createElement('span'); delIcon.className = 'section-controls-icon'; delIcon.setAttribute('aria-label', 'Remove Section'); delIcon.textContent = '🗑️';
+        const delText = document.createElement('span'); delText.className = 'section-controls-text'; delText.textContent = 'Remove Section';
+        delBtn.append(delIcon, delText);
+
         right.append(colBtn, addBtn, delBtn); h.appendChild(right); sec.appendChild(h);
 
         const list = document.createElement('div'); list.className = 'items'; if (section.collapsed) list.style.display = 'none';
@@ -790,9 +866,18 @@
           const head = document.createElement('div'); head.className = 'item-head';
           const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = !!it.done; cb.onchange = () => { it.done = cb.checked; touch(); renderProgress() };
           const txt = document.createElement('input'); txt.type = 'text'; txt.value = it.text; txt.oninput = () => { it.text = txt.value; touch() };
-          const del = document.createElement('button'); del.textContent = '✕'; del.className = 'ghost'; del.onclick = () => { section.items.splice(iIdx, 1); touch(); renderChecklist(); renderProgress() };
+          // Delete button with icon/text
+          const del = document.createElement('button'); del.className = 'ghost'; del.onclick = () => { section.items.splice(iIdx, 1); touch(); renderChecklist(); renderProgress() };
+          const delItemIcon = document.createElement('span'); delItemIcon.className = 'item-btn-icon'; delItemIcon.setAttribute('aria-label', 'Delete'); delItemIcon.textContent = '✕';
+          const delItemText = document.createElement('span'); delItemText.className = 'item-btn-text'; delItemText.textContent = 'Delete';
+          del.append(delItemIcon, delItemText);
 
-          const noteBtn = document.createElement('button'); noteBtn.type = 'button'; noteBtn.textContent = '📝 Note'; noteBtn.className = 'ghost';
+          // Note button with icon/text
+          const noteBtn = document.createElement('button'); noteBtn.type = 'button'; noteBtn.className = 'ghost';
+          const noteIcon = document.createElement('span'); noteIcon.className = 'item-btn-icon'; noteIcon.setAttribute('aria-label', 'Note'); noteIcon.textContent = '📝';
+          const noteText = document.createElement('span'); noteText.className = 'item-btn-text'; noteText.textContent = 'Note';
+          noteBtn.append(noteIcon, noteText);
+
           const noteWrap = document.createElement('div'); noteWrap.style.display = 'none';
           const note = document.createElement('textarea'); note.placeholder = 'Notes…'; note.value = it.note || ''; note.oninput = () => { it.note = note.value; touch() };
           noteWrap.appendChild(note);
