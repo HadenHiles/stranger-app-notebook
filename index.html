@@ -1,83 +1,434 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Stranger App Series — Production Notebook</title>
   <style>
-    :root{
+    :root {
       --bg: #0f1221;
-      --bg-soft:#141733;
-      --card:#181c3f;
-      --muted:#8e95b3;
-      --text:#e9ebff;
-      --accent:#7c9aff;
-      --accent-2:#4be3c2;
-      --danger:#ff6b6b;
-      --ok:#00c896;
+      --bg-soft: #141733;
+      --card: #181c3f;
+      --muted: #8e95b3;
+      --text: #e9ebff;
+      --accent: #7c9aff;
+      --accent-2: #4be3c2;
+      --danger: #ff6b6b;
+      --ok: #00c896;
       --border: #2a2f5a;
-      --shadow: 0 10px 30px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.03);
+      --shadow: 0 10px 30px rgba(0, 0, 0, .4), inset 0 1px 0 rgba(255, 255, 255, .03);
       --radius: 14px;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Apple Color Emoji","Segoe UI Emoji";
-      background: radial-gradient(1200px 800px at 80% -10%, #1b2060 0%, transparent 60%),
-                  radial-gradient(1000px 600px at -10% 20%, #15204a 0%, transparent 60%),
-                  var(--bg);
-      color:var(--text);
-      -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+
+    * {
+      box-sizing: border-box
     }
-    .app{max-width:1100px; margin:28px auto; padding:0 16px 80px}
-    header{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px}
-    .brand{display:flex; align-items:center; gap:12px}
-    .logo{width:40px; height:40px; border-radius:12px; background: linear-gradient(145deg, var(--accent), #3b57ff); box-shadow: var(--shadow); display:grid; place-items:center; font-weight:800; color:white}
-    .brand h1{font-size:20px; margin:0; letter-spacing:.2px}
-    .muted{color:var(--muted)}
-    .controls{display:flex; flex-wrap:wrap; gap:8px}
-    button,.btn{border:1px solid var(--border); background: linear-gradient(180deg, #222752, #161a3a); color:var(--text); padding:9px 14px; border-radius:10px; cursor:pointer; box-shadow: var(--shadow); transition:transform .06s ease, border-color .2s ease, background .2s ease; font-weight:600; letter-spacing:.2px}
-    button:hover{transform:translateY(-1px); border-color:#3b57ff}
-    button.ghost{background:transparent}
-    button.primary{background:linear-gradient(180deg, #5f79ff, #3b57ff); border-color:#3b57ff}
-    button.danger{background:linear-gradient(180deg, #ff7a7a, #ff5a5a); border-color:#ff5a5a}
-    .tabs{display:flex; gap:8px; margin:12px 0 20px}
-    .tab-btn{padding:10px 14px; border-radius:11px; background:linear-gradient(180deg, #1c2148,#151a37); border:1px solid var(--border)}
-    .tab-btn.active{background:linear-gradient(180deg, #2a316a, #1b2354); border-color:#3b57ff}
-    .tab-panel{display:none}
-    .tab-panel.active{display:block}
-    .card{background:linear-gradient(180deg, #1a1f47, #121639); border:1px solid var(--border); box-shadow:var(--shadow); border-radius:var(--radius); padding:16px}
-    .grid{display:grid; gap:14px}
-    .panel-header{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:10px 0}
-    input[type="text"],input[type="date"],input[type="time"],textarea{width:100%; background:#0f1330; border:1px solid var(--border); color:var(--text); padding:10px 12px; border-radius:10px; outline:none}
-    textarea{min-height:80px; resize:vertical}
-    .split-2{display:grid; grid-template-columns:1fr 1fr; gap:12px}
-    .split-3{display:grid; grid-template-columns:repeat(3,1fr); gap:12px}
-    @media (max-width:880px){.split-2,.split-3{grid-template-columns:1fr}}
-    .progress{height:12px; border-radius:999px; background:#141a45; border:1px solid var(--border); overflow:hidden}
-    .progress > span{display:block; height:100%; background:linear-gradient(90deg, var(--accent), var(--accent-2)); width:0}
-    .section{border:1px solid var(--border); border-radius:13px; padding:12px; background:linear-gradient(180deg,#141942,#0e1234)}
-    .section h3{margin:0 0 8px 0; font-size:16px}
-    .items{display:grid; gap:10px}
-    .item{display:grid; gap:8px; background:#0d1130; border:1px dashed #2a3064; padding:10px; border-radius:10px}
-    .item-head{display:flex; align-items:center; gap:10px}
-    .item-head input[type="checkbox"]{width:18px; height:18px}
-    .item-head input[type="text"]{flex:1}
-    .item small{color:var(--muted)}
-    .tag{display:inline-flex; align-items:center; gap:6px; font-size:12px; padding:4px 8px; border-radius:999px; border:1px solid var(--border); background:#0b0f2b}
-    table{width:100%; border-collapse:collapse}
-    th,td{padding:10px; border-bottom:1px solid var(--border); text-align:left}
-    tr:hover td{background:#0c1130}
-    .status-dot{width:10px; height:10px; border-radius:999px; display:inline-block; margin-right:6px}
-    .green{background:var(--ok)}
-    .red{background:var(--danger)}
-    .yellow{background:#ffc45a}
-    .pill-input{display:flex; gap:8px}
-    .pill-input input{flex:1}
-    .note{font-size:12px; color:var(--muted)}
-    .save-indicator{font-size:12px; color:var(--muted)}
+
+    html,
+    body {
+      height: 100%
+    }
+
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1200px 800px at 80% -10%, #1b2060 0%, transparent 60%),
+        radial-gradient(1000px 600px at -10% 20%, #15204a 0%, transparent 60%),
+        var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    .app {
+      max-width: 1100px;
+      margin: 28px auto;
+      padding: 0 8px 80px
+    }
+
+    header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+      flex-wrap: wrap
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(145deg, var(--accent), #3b57ff);
+      box-shadow: var(--shadow);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      color: white;
+      flex-shrink: 0
+    }
+
+    .brand h1 {
+      font-size: 18px;
+      margin: 0;
+      letter-spacing: .2px;
+      word-break: break-word;
+      line-height: 1.2
+    }
+
+    .muted {
+      color: var(--muted)
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+      width: 100%;
+      margin-top: 8px
+    }
+
+    button,
+    .btn {
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, #222752, #161a3a);
+      color: var(--text);
+      padding: 11px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: transform .06s ease, border-color .2s ease, background .2s ease;
+      font-weight: 600;
+      letter-spacing: .2px;
+      font-size: 16px;
+      min-width: 44px
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      border-color: #3b57ff
+    }
+
+    button.ghost {
+      background: transparent
+    }
+
+    button.primary {
+      background: linear-gradient(180deg, #5f79ff, #3b57ff);
+      border-color: #3b57ff
+    }
+
+    button.danger {
+      background: linear-gradient(180deg, #ff7a7a, #ff5a5a);
+      border-color: #ff5a5a
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin: 12px 0 20px;
+      flex-wrap: wrap
+    }
+
+    .tab-btn {
+      padding: 12px 16px;
+      border-radius: 11px;
+      background: linear-gradient(180deg, #1c2148, #151a37);
+      border: 1px solid var(--border);
+      font-size: 16px;
+      flex: 1 1 120px;
+      min-width: 0
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(180deg, #2a316a, #1b2354);
+      border-color: #3b57ff
+    }
+
+    .tab-panel {
+      display: none
+    }
+
+    .tab-panel.active {
+      display: block
+    }
+
+    .card {
+      background: linear-gradient(180deg, #1a1f47, #121639);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      padding: 16px
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px
+    }
+
+    .panel-header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin: 10px 0
+    }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="time"],
+    textarea {
+      width: 100%;
+      background: #0f1330;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 14px 14px;
+      border-radius: 10px;
+      outline: none;
+      font-size: 16px
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical
+    }
+
+    .split-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px
+    }
+
+    .split-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px
+    }
+
+    @media (max-width:880px) {
+
+      .split-2,
+      .split-3 {
+        grid-template-columns: 1fr
+      }
+
+      .controls {
+        justify-content: flex-start
+      }
+    }
+
+    @media (max-width:600px) {
+      .app {
+        padding: 0 2vw 60px
+      }
+
+      header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        margin-bottom: 10px
+      }
+
+      .brand {
+        flex-direction: row;
+        align-items: center;
+        gap: 10px
+      }
+
+      .brand h1 {
+        font-size: 15px
+      }
+
+      .controls {
+        gap: 6px;
+        margin-top: 6px;
+      }
+
+      .tabs {
+        gap: 4px;
+        margin: 10px 0 14px
+      }
+
+      .tab-btn {
+        font-size: 14px;
+        padding: 10px 8px
+      }
+
+      .card {
+        padding: 10px
+      }
+
+      .panel-header {
+        gap: 6px;
+        margin: 8px 0
+      }
+
+      input[type="text"],
+      input[type="date"],
+      input[type="time"],
+      textarea {
+        font-size: 15px;
+        padding: 10px 8px
+      }
+
+      .section {
+        padding: 8px
+      }
+
+      th,
+      td {
+        padding: 7px
+      }
+
+      .item {
+        padding: 7px
+      }
+    }
+
+    .progress {
+      height: 14px;
+      border-radius: 999px;
+      background: #141a45;
+      border: 1px solid var(--border);
+      overflow: hidden
+    }
+
+    .progress>span {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      width: 0
+    }
+
+    .section {
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 12px;
+      background: linear-gradient(180deg, #141942, #0e1234)
+    }
+
+    .section h3 {
+      margin: 0 0 8px 0;
+      font-size: 16px
+    }
+
+    .items {
+      display: grid;
+      gap: 10px
+    }
+
+    .item {
+      display: grid;
+      gap: 8px;
+      background: #0d1130;
+      border: 1px dashed #2a3064;
+      padding: 10px;
+      border-radius: 10px
+    }
+
+    .item-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap
+    }
+
+    .item-head input[type="checkbox"] {
+      width: 20px;
+      height: 20px
+    }
+
+    .item-head input[type="text"] {
+      flex: 1;
+      min-width: 0
+    }
+
+    .item small {
+      color: var(--muted)
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #0b0f2b;
+      width: 100%;
+      justify-content: flex-start
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 15px
+    }
+
+    th,
+    td {
+      padding: 10px;
+      border-bottom: 1px solid var(--border);
+      text-align: left
+    }
+
+    tr:hover td {
+      background: #0c1130
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      display: inline-block;
+      margin-right: 6px
+    }
+
+    .green {
+      background: var(--ok)
+    }
+
+    .red {
+      background: var(--danger)
+    }
+
+    .yellow {
+      background: #ffc45a
+    }
+
+    .pill-input {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap
+    }
+
+    .pill-input input {
+      flex: 1;
+      min-width: 0
+    }
+
+    .note {
+      font-size: 13px;
+      color: var(--muted)
+    }
+
+    .save-indicator {
+      font-size: 12px;
+      color: var(--muted)
+    }
   </style>
 </head>
+
 <body>
   <div class="app">
     <header>
@@ -90,11 +441,13 @@
       </div>
       <div class="controls">
         <button type="button" class="ghost" id="newProjectBtn">➕ New Project</button>
-        <button type="button" class="primary" id="saveSnapshotBtn" title="Save/Update this project">💾 Save Project</button>
+        <button type="button" class="primary" id="saveSnapshotBtn" title="Save/Update this project">💾 Save
+          Project</button>
         <button type="button" class="ghost" id="duplicateBtn">🧬 Duplicate</button>
         <button type="button" class="ghost" id="exportBtn">⬇️ Export</button>
         <button type="button" class="ghost" id="importBtn">⬆️ Import</button>
-        <button type="button" class="danger" id="resetTemplateBtn" title="Reset checklist to defaults (current project only)">♻️ Reset Checklist</button>
+        <button type="button" class="danger" id="resetTemplateBtn"
+          title="Reset checklist to defaults (current project only)">♻️ Reset Checklist</button>
       </div>
     </header>
 
@@ -156,9 +509,12 @@
           </div>
         </div>
         <div class="split-3">
-          <div class="tag"><input type="checkbox" id="consent"/> <label for="consent">Consent to be filmed</label></div>
-          <div class="tag"><input type="checkbox" id="nonCompete"/> <label for="nonCompete">Non-competing niche</label></div>
-          <div class="tag"><input type="checkbox" id="paidPotential"/> <label for="paidPotential">Potential paid project</label></div>
+          <div class="tag"><input type="checkbox" id="consent" /> <label for="consent">Consent to be filmed</label>
+          </div>
+          <div class="tag"><input type="checkbox" id="nonCompete" /> <label for="nonCompete">Non-competing niche</label>
+          </div>
+          <div class="tag"><input type="checkbox" id="paidPotential" /> <label for="paidPotential">Potential paid
+              project</label></div>
         </div>
         <div>
           <label class="note">App Idea Summary</label>
@@ -177,21 +533,21 @@
         <div class="split-2">
           <div>
             <label class="note">Constraints/Timeframe</label>
-            <input type="text" id="constraints" placeholder="1 week build, offline demo, etc."/>
+            <input type="text" id="constraints" placeholder="1 week build, offline demo, etc." />
           </div>
           <div>
             <label class="note">Monetization Hypothesis</label>
-            <input type="text" id="monetization" placeholder="Subscription, one-off, B2B, ads, etc."/>
+            <input type="text" id="monetization" placeholder="Subscription, one-off, B2B, ads, etc." />
           </div>
         </div>
         <div class="split-2">
           <div>
             <label class="note">Success Metrics</label>
-            <input type="text" id="metrics" placeholder="What proves the MVP works?"/>
+            <input type="text" id="metrics" placeholder="What proves the MVP works?" />
           </div>
           <div>
             <label class="note">Demo Link / Location</label>
-            <input type="text" id="demoLink" placeholder="Zoom link or meet location"/>
+            <input type="text" id="demoLink" placeholder="Zoom link or meet location" />
           </div>
         </div>
       </div>
@@ -223,7 +579,8 @@
           <h3 style="margin:0">Projects</h3>
           <div class="note" id="projectCount">—</div>
         </div>
-        <div class="note" style="margin-bottom:10px">Your data never leaves this device. Export/Import to move between devices.</div>
+        <div class="note" style="margin-bottom:10px">Your data never leaves this device. Export/Import to move between
+          devices.</div>
         <div style="overflow:auto">
           <table id="projectsTable">
             <thead>
@@ -252,10 +609,10 @@
     }
 
     // ======== Utilities ========
-    const $ = (sel, root=document) => root.querySelector(sel);
-    const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+    const $ = (sel, root = document) => root.querySelector(sel);
+    const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
     const fmtDate = (ts) => new Date(ts).toLocaleString();
-    const uid = () => `${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`;
+    const uid = () => `${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
 
     // ======== Storage Keys ========
     const LS_KEY = 'SABS_projects_v1';
@@ -263,65 +620,77 @@
 
     // ======== Default Checklist Template ========
     const DEFAULT_TEMPLATE = [
-      { title: 'Phase 1 — Pre-Production', collapsed:false, items: [
-        {text:'Pick the stranger & get consent to be filmed', done:false, note:''},
-        {text:'Prepare filming kit (camera/phone, mic, tripod)', done:false, note:''},
-        {text:'Plan 20–30s hook for intro', done:false, note:''},
-        {text:'Choose location / backup plan', done:false, note:''}
-      ]},
-      { title: 'Phase 2 — Intro (Day 1)', collapsed:false, items: [
-        {text:'Capture approach + question on camera', done:false, note:''},
-        {text:'Record idea description (get excitement & quirks)', done:false, note:''},
-        {text:'Your reaction on camera ("challenge accepted!")', done:false, note:''},
-        {text:'Selfie-style recap summarizing the idea', done:false, note:''}
-      ]},
-      { title: 'Phase 3 — Build Week (Days 2–6)', collapsed:false, items: [
-        {text:'Create repo / project scaffold', done:false, note:''},
-        {text:'Screen-record coding sessions (timelapse)', done:false, note:''},
-        {text:'Talking-head updates: Day 2 / 4 / 6', done:false, note:''},
-        {text:'Implement core feature(s)', done:false, note:''},
-        {text:'Basic UI/UX pass', done:false, note:''},
-        {text:'Handle key edge cases / debugging', done:false, note:''},
-        {text:'Prepare demo data / seed script', done:false, note:''}
-      ]},
-      { title: 'Phase 4 — Reveal (Day 7)', collapsed:false, items: [
-        {text:'Schedule reveal (IRL or Zoom) & confirm', done:false, note:''},
-        {text:'Prepare live demo flow/script', done:false, note:''},
-        {text:'Record reveal + their reaction', done:false, note:''},
-        {text:'Capture feedback & next steps', done:false, note:''}
-      ]},
-      { title: 'Phase 5 — Editing Workflow', collapsed:false, items: [
-        {text:'Assemble timeline: intro → build → reveal', done:false, note:''},
-        {text:'Select best timelapses & talking clips', done:false, note:''},
-        {text:'Add captions/b-roll/music (lightweight)', done:false, note:''},
-        {text:'On-screen titles / lower-thirds', done:false, note:''},
-        {text:'Design thumbnail', done:false, note:''},
-        {text:'Write title & description', done:false, note:''},
-        {text:'Add chapters & CTAs', done:false, note:''}
-      ]},
-      { title: 'Phase 6 — Upload & Feedback', collapsed:false, items: [
-        {text:'Upload long-form video', done:false, note:''},
-        {text:'Schedule 3–5 Shorts', done:false, note:''},
-        {text:'Pin comment (CTA) & respond 24–48h', done:false, note:''},
-        {text:'Capture metrics & lessons learned', done:false, note:''},
-        {text:'Decision: polish into real app?', done:false, note:''}
-      ]}
+      {
+        title: 'Phase 1 — Pre-Production', collapsed: false, items: [
+          { text: 'Pick the stranger & get consent to be filmed', done: false, note: '' },
+          { text: 'Prepare filming kit (camera/phone, mic, tripod)', done: false, note: '' },
+          { text: 'Plan 20–30s hook for intro', done: false, note: '' },
+          { text: 'Choose location / backup plan', done: false, note: '' }
+        ]
+      },
+      {
+        title: 'Phase 2 — Intro (Day 1)', collapsed: false, items: [
+          { text: 'Capture approach + question on camera', done: false, note: '' },
+          { text: 'Record idea description (get excitement & quirks)', done: false, note: '' },
+          { text: 'Your reaction on camera ("challenge accepted!")', done: false, note: '' },
+          { text: 'Selfie-style recap summarizing the idea', done: false, note: '' }
+        ]
+      },
+      {
+        title: 'Phase 3 — Build Week (Days 2–6)', collapsed: false, items: [
+          { text: 'Create repo / project scaffold', done: false, note: '' },
+          { text: 'Screen-record coding sessions (timelapse)', done: false, note: '' },
+          { text: 'Talking-head updates: Day 2 / 4 / 6', done: false, note: '' },
+          { text: 'Implement core feature(s)', done: false, note: '' },
+          { text: 'Basic UI/UX pass', done: false, note: '' },
+          { text: 'Handle key edge cases / debugging', done: false, note: '' },
+          { text: 'Prepare demo data / seed script', done: false, note: '' }
+        ]
+      },
+      {
+        title: 'Phase 4 — Reveal (Day 7)', collapsed: false, items: [
+          { text: 'Schedule reveal (IRL or Zoom) & confirm', done: false, note: '' },
+          { text: 'Prepare live demo flow/script', done: false, note: '' },
+          { text: 'Record reveal + their reaction', done: false, note: '' },
+          { text: 'Capture feedback & next steps', done: false, note: '' }
+        ]
+      },
+      {
+        title: 'Phase 5 — Editing Workflow', collapsed: false, items: [
+          { text: 'Assemble timeline: intro → build → reveal', done: false, note: '' },
+          { text: 'Select best timelapses & talking clips', done: false, note: '' },
+          { text: 'Add captions/b-roll/music (lightweight)', done: false, note: '' },
+          { text: 'On-screen titles / lower-thirds', done: false, note: '' },
+          { text: 'Design thumbnail', done: false, note: '' },
+          { text: 'Write title & description', done: false, note: '' },
+          { text: 'Add chapters & CTAs', done: false, note: '' }
+        ]
+      },
+      {
+        title: 'Phase 6 — Upload & Feedback', collapsed: false, items: [
+          { text: 'Upload long-form video', done: false, note: '' },
+          { text: 'Schedule 3–5 Shorts', done: false, note: '' },
+          { text: 'Pin comment (CTA) & respond 24–48h', done: false, note: '' },
+          { text: 'Capture metrics & lessons learned', done: false, note: '' },
+          { text: 'Decision: polish into real app?', done: false, note: '' }
+        ]
+      }
     ];
 
     // ======== State ========
-    function loadProjects(){
-      try{ return JSON.parse(localStorage.getItem(LS_KEY) || '[]'); }catch(e){ return [] }
+    function loadProjects() {
+      try { return JSON.parse(localStorage.getItem(LS_KEY) || '[]'); } catch (e) { return [] }
     }
     let projects = loadProjects();
     let activeId = localStorage.getItem(LS_ACTIVE) || null;
 
-    function persist(){
+    function persist() {
       localStorage.setItem(LS_KEY, JSON.stringify(projects));
       localStorage.setItem(LS_ACTIVE, activeId || '');
       render();
     }
 
-    function newProject(title){
+    function newProject(title) {
       return {
         id: uid(),
         title: (title && String(title).trim()) || 'Untitled Project',
@@ -332,104 +701,104 @@
         revealTime: '',
         template: structuredClone(DEFAULT_TEMPLATE),
         idea: {
-          strangerName:'', strangerContact:'', consent:false, nonCompete:false, paidPotential:false,
-          summary:'', problem:'', users:'', constraints:'', monetization:'', metrics:'', demoLink:'',
-          features:[], niceToHaves:[]
+          strangerName: '', strangerContact: '', consent: false, nonCompete: false, paidPotential: false,
+          summary: '', problem: '', users: '', constraints: '', monetization: '', metrics: '', demoLink: '',
+          features: [], niceToHaves: []
         }
       }
     }
 
-    if(!projects.length){
+    if (!projects.length) {
       const p = newProject('Untitled Project');
       projects.push(p); activeId = p.id; persist();
-    } else if(!activeId){
+    } else if (!activeId) {
       activeId = projects[0].id; persist();
     }
 
-    function getActive(){ return projects.find(p=>p.id===activeId); }
+    function getActive() { return projects.find(p => p.id === activeId); }
 
-    function touch(){ const p=getActive(); if(!p) return; p.updatedAt = Date.now(); saveIndicator(); }
+    function touch() { const p = getActive(); if (!p) return; p.updatedAt = Date.now(); saveIndicator(); }
 
-    let saveTimeout; function saveIndicator(){
+    let saveTimeout; function saveIndicator() {
       const el = $('#saveIndicator');
       el.textContent = 'Saving…';
       clearTimeout(saveTimeout);
-      saveTimeout = setTimeout(()=>{ el.textContent = 'All changes saved locally'; persist(); }, 400);
+      saveTimeout = setTimeout(() => { el.textContent = 'All changes saved locally'; persist(); }, 400);
     }
 
     // ======== Tabs ========
-    function switchTab(tab){
-      $$('.tab-btn').forEach(b=>{ b.classList.toggle('active', b.dataset.tab===tab); });
-      $$('.tab-panel').forEach(p=>{ p.classList.toggle('active', p.id===tab); });
+    function switchTab(tab) {
+      $$('.tab-btn').forEach(b => { b.classList.toggle('active', b.dataset.tab === tab); });
+      $$('.tab-panel').forEach(p => { p.classList.toggle('active', p.id === tab); });
     }
-    function renderTabs(){
-      $$('.tab-btn').forEach(btn=>{
-        btn.onclick = ()=> switchTab(btn.dataset.tab);
+    function renderTabs() {
+      $$('.tab-btn').forEach(btn => {
+        btn.onclick = () => switchTab(btn.dataset.tab);
       });
     }
 
     // ======== Render ========
-    function render(){
+    function render() {
       renderTabs();
       renderChecklist();
       renderIdea();
       renderProjects();
     }
 
-    function renderProgress(total, done){
-      if(total==null){ const p=getActive(); total=0; done=0; p.template.forEach(sec=>sec.items.forEach(it=>{total++; if(it.done) done++})) }
-      const pct = total? Math.round((done/total)*100) : 0;
-      $('#progressFill').style.width = pct+'%';
+    function renderProgress(total, done) {
+      if (total == null) { const p = getActive(); total = 0; done = 0; p.template.forEach(sec => sec.items.forEach(it => { total++; if (it.done) done++ })) }
+      const pct = total ? Math.round((done / total) * 100) : 0;
+      $('#progressFill').style.width = pct + '%';
       $('#subtitle').textContent = `Local-only • ${pct}% complete`;
     }
 
-    function addItem(sIdx){
+    function addItem(sIdx) {
       const p = getActive();
-      const label = prompt('Checklist item'); if(!label) return;
-      p.template[sIdx].items.push({text:label, done:false, note:''});
+      const label = prompt('Checklist item'); if (!label) return;
+      p.template[sIdx].items.push({ text: label, done: false, note: '' });
       touch(); renderChecklist(); renderProgress();
     }
-    function removeSection(sIdx){
-      if(!confirm('Remove this entire section?')) return;
-      const p = getActive(); p.template.splice(sIdx,1); touch(); renderChecklist(); renderProgress();
+    function removeSection(sIdx) {
+      if (!confirm('Remove this entire section?')) return;
+      const p = getActive(); p.template.splice(sIdx, 1); touch(); renderChecklist(); renderProgress();
     }
 
-    function renderChecklist(){
-      const p = getActive(); if(!p) return;
+    function renderChecklist() {
+      const p = getActive(); if (!p) return;
       $('#projectTitle').value = p.title;
       $('#revealDate').value = p.revealDate || '';
       $('#revealTime').value = p.revealTime || '';
 
       const wrap = $('#sections'); wrap.innerHTML = '';
-      let total=0, done=0;
+      let total = 0, done = 0;
 
-      p.template.forEach((section, sIdx)=>{
-        if(section.collapsed==null) section.collapsed=false;
+      p.template.forEach((section, sIdx) => {
+        if (section.collapsed == null) section.collapsed = false;
         const sec = document.createElement('div'); sec.className = 'section';
-        const h = document.createElement('div'); h.style.display='flex'; h.style.justifyContent='space-between'; h.style.alignItems='center'; h.style.gap='8px';
+        const h = document.createElement('div'); h.style.display = 'flex'; h.style.justifyContent = 'space-between'; h.style.alignItems = 'center'; h.style.gap = '8px';
         const title = document.createElement('h3'); title.textContent = section.title; h.appendChild(title);
-        const right = document.createElement('div'); right.style.display='flex'; right.style.gap='8px';
-        const colBtn = document.createElement('button'); colBtn.type='button'; colBtn.textContent = section.collapsed ? '▶ Expand' : '▼ Collapse'; colBtn.className='ghost'; colBtn.onclick=()=>{ section.collapsed=!section.collapsed; touch(); renderChecklist(); };
-        const addBtn = document.createElement('button'); addBtn.type='button'; addBtn.textContent='＋ Add Item'; addBtn.onclick=()=>addItem(sIdx);
-        const delBtn = document.createElement('button'); delBtn.type='button'; delBtn.textContent='🗑️ Remove Section'; delBtn.className='danger'; delBtn.onclick=()=>removeSection(sIdx);
+        const right = document.createElement('div'); right.style.display = 'flex'; right.style.gap = '8px';
+        const colBtn = document.createElement('button'); colBtn.type = 'button'; colBtn.textContent = section.collapsed ? '▶ Expand' : '▼ Collapse'; colBtn.className = 'ghost'; colBtn.onclick = () => { section.collapsed = !section.collapsed; touch(); renderChecklist(); };
+        const addBtn = document.createElement('button'); addBtn.type = 'button'; addBtn.textContent = '＋ Add Item'; addBtn.onclick = () => addItem(sIdx);
+        const delBtn = document.createElement('button'); delBtn.type = 'button'; delBtn.textContent = '🗑️ Remove Section'; delBtn.className = 'danger'; delBtn.onclick = () => removeSection(sIdx);
         right.append(colBtn, addBtn, delBtn); h.appendChild(right); sec.appendChild(h);
 
-        const list = document.createElement('div'); list.className='items'; if(section.collapsed) list.style.display='none';
-        section.items.forEach((it, iIdx)=>{
-          total++; if(it.done) done++;
-          const row = document.createElement('div'); row.className='item';
-          const head = document.createElement('div'); head.className='item-head';
-          const cb = document.createElement('input'); cb.type='checkbox'; cb.checked=!!it.done; cb.onchange=()=>{it.done=cb.checked; touch(); renderProgress()};
-          const txt = document.createElement('input'); txt.type='text'; txt.value=it.text; txt.oninput=()=>{it.text=txt.value; touch()};
-          const del = document.createElement('button'); del.textContent='✕'; del.className='ghost'; del.onclick=()=>{section.items.splice(iIdx,1); touch(); renderChecklist(); renderProgress()};
+        const list = document.createElement('div'); list.className = 'items'; if (section.collapsed) list.style.display = 'none';
+        section.items.forEach((it, iIdx) => {
+          total++; if (it.done) done++;
+          const row = document.createElement('div'); row.className = 'item';
+          const head = document.createElement('div'); head.className = 'item-head';
+          const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = !!it.done; cb.onchange = () => { it.done = cb.checked; touch(); renderProgress() };
+          const txt = document.createElement('input'); txt.type = 'text'; txt.value = it.text; txt.oninput = () => { it.text = txt.value; touch() };
+          const del = document.createElement('button'); del.textContent = '✕'; del.className = 'ghost'; del.onclick = () => { section.items.splice(iIdx, 1); touch(); renderChecklist(); renderProgress() };
 
-          const noteBtn = document.createElement('button'); noteBtn.type='button'; noteBtn.textContent='📝 Note'; noteBtn.className='ghost';
-          const noteWrap = document.createElement('div'); noteWrap.style.display='none';
-          const note = document.createElement('textarea'); note.placeholder='Notes…'; note.value=it.note||''; note.oninput=()=>{ it.note=note.value; touch() };
+          const noteBtn = document.createElement('button'); noteBtn.type = 'button'; noteBtn.textContent = '📝 Note'; noteBtn.className = 'ghost';
+          const noteWrap = document.createElement('div'); noteWrap.style.display = 'none';
+          const note = document.createElement('textarea'); note.placeholder = 'Notes…'; note.value = it.note || ''; note.oninput = () => { it.note = note.value; touch() };
           noteWrap.appendChild(note);
-          const isOpen = it.noteOpen || (it.note && it.note.length>0);
+          const isOpen = it.noteOpen || (it.note && it.note.length > 0);
           noteWrap.style.display = isOpen ? 'block' : 'none';
-          noteBtn.onclick = ()=>{ it.noteOpen = !(it.noteOpen||false); noteWrap.style.display = it.noteOpen ? 'block' : 'none'; touch(); };
+          noteBtn.onclick = () => { it.noteOpen = !(it.noteOpen || false); noteWrap.style.display = it.noteOpen ? 'block' : 'none'; touch(); };
 
           head.append(cb, txt, del, noteBtn);
           row.append(head, noteWrap);
@@ -440,24 +809,24 @@
 
       renderProgress(total, done);
 
-      document.getElementById('addSectionBtn').onclick = ()=>{
-        const title = prompt('Section title?'); if(!title) return;
-        p.template.push({title, items:[], collapsed:false});
+      document.getElementById('addSectionBtn').onclick = () => {
+        const title = prompt('Section title?'); if (!title) return;
+        p.template.push({ title, items: [], collapsed: false });
         touch(); renderChecklist();
       };
 
       const cab = document.getElementById('collapseAllBtn'); const eab = document.getElementById('expandAllBtn');
-      if(cab) cab.onclick = ()=>{ p.template.forEach(sec=>sec.collapsed=true); touch(); renderChecklist(); };
-      if(eab) eab.onclick = ()=>{ p.template.forEach(sec=>sec.collapsed=false); touch(); renderChecklist(); };
+      if (cab) cab.onclick = () => { p.template.forEach(sec => sec.collapsed = true); touch(); renderChecklist(); };
+      if (eab) eab.onclick = () => { p.template.forEach(sec => sec.collapsed = false); touch(); renderChecklist(); };
 
       // Bind header inputs
-      document.getElementById('projectTitle').oninput = (e)=>{ p.title = e.target.value; touch(); renderProjects() };
-      document.getElementById('revealDate').onchange = (e)=>{ p.revealDate = e.target.value; touch(); renderProjects() };
-      document.getElementById('revealTime').onchange = (e)=>{ p.revealTime = e.target.value; touch(); };
+      document.getElementById('projectTitle').oninput = (e) => { p.title = e.target.value; touch(); renderProjects() };
+      document.getElementById('revealDate').onchange = (e) => { p.revealDate = e.target.value; touch(); renderProjects() };
+      document.getElementById('revealTime').onchange = (e) => { p.revealTime = e.target.value; touch(); };
     }
 
-    function renderIdea(){
-      const p = getActive(); if(!p) return; const I = p.idea;
+    function renderIdea() {
+      const p = getActive(); if (!p) return; const I = p.idea;
       $('#strangerName').value = I.strangerName || '';
       $('#strangerContact').value = I.strangerContact || '';
       $('#consent').checked = !!I.consent;
@@ -471,84 +840,84 @@
       $('#metrics').value = I.metrics || '';
       $('#demoLink').value = I.demoLink || '';
 
-      const bind = (id, key, isCheck=false)=>{ $(id).oninput = (e)=>{ I[key] = isCheck ? e.target.checked : e.target.value; touch(); }; };
-      bind('#strangerName','strangerName');
-      bind('#strangerContact','strangerContact');
-      bind('#ideaSummary','summary');
-      bind('#problem','problem');
-      bind('#users','users');
-      bind('#constraints','constraints');
-      bind('#monetization','monetization');
-      bind('#metrics','metrics');
-      bind('#demoLink','demoLink');
-      $('#consent').onchange = (e)=>{ I.consent = e.target.checked; touch(); };
-      $('#nonCompete').onchange = (e)=>{ I.nonCompete = e.target.checked; touch(); };
-      $('#paidPotential').onchange = (e)=>{ I.paidPotential = e.target.checked; touch(); };
+      const bind = (id, key, isCheck = false) => { $(id).oninput = (e) => { I[key] = isCheck ? e.target.checked : e.target.value; touch(); }; };
+      bind('#strangerName', 'strangerName');
+      bind('#strangerContact', 'strangerContact');
+      bind('#ideaSummary', 'summary');
+      bind('#problem', 'problem');
+      bind('#users', 'users');
+      bind('#constraints', 'constraints');
+      bind('#monetization', 'monetization');
+      bind('#metrics', 'metrics');
+      bind('#demoLink', 'demoLink');
+      $('#consent').onchange = (e) => { I.consent = e.target.checked; touch(); };
+      $('#nonCompete').onchange = (e) => { I.nonCompete = e.target.checked; touch(); };
+      $('#paidPotential').onchange = (e) => { I.paidPotential = e.target.checked; touch(); };
 
       const lists = [
-        { root:'#features', addBtn:'#addFeatureBtn', input:'#featureInput', key:'features' },
-        { root:'#niceToHaves', addBtn:'#addNiceBtn', input:'#niceInput', key:'niceToHaves' }
+        { root: '#features', addBtn: '#addFeatureBtn', input: '#featureInput', key: 'features' },
+        { root: '#niceToHaves', addBtn: '#addNiceBtn', input: '#niceInput', key: 'niceToHaves' }
       ];
-      lists.forEach(cfg=>{
-        const root = $(cfg.root); root.innerHTML='';
-        (I[cfg.key]||[]).forEach((feat, idx)=>{
-          const wrap = document.createElement('div'); wrap.className='item';
-          const head = document.createElement('div'); head.className='item-head';
-          const text = document.createElement('input'); text.type='text'; text.value = feat.text || ''; text.oninput=()=>{ feat.text = text.value; touch(); };
-          const del = document.createElement('button'); del.textContent='✕'; del.className='ghost'; del.onclick=()=>{ I[cfg.key].splice(idx,1); touch(); renderIdea(); };
+      lists.forEach(cfg => {
+        const root = $(cfg.root); root.innerHTML = '';
+        (I[cfg.key] || []).forEach((feat, idx) => {
+          const wrap = document.createElement('div'); wrap.className = 'item';
+          const head = document.createElement('div'); head.className = 'item-head';
+          const text = document.createElement('input'); text.type = 'text'; text.value = feat.text || ''; text.oninput = () => { feat.text = text.value; touch(); };
+          const del = document.createElement('button'); del.textContent = '✕'; del.className = 'ghost'; del.onclick = () => { I[cfg.key].splice(idx, 1); touch(); renderIdea(); };
           head.append(text, del);
-          const note = document.createElement('textarea'); note.placeholder='Notes…'; note.value=feat.note||''; note.oninput=()=>{ feat.note = note.value; touch(); };
+          const note = document.createElement('textarea'); note.placeholder = 'Notes…'; note.value = feat.note || ''; note.oninput = () => { feat.note = note.value; touch(); };
           wrap.append(head, note); root.appendChild(wrap);
         });
-        $(cfg.addBtn).onclick = ()=>{
-          const val = $(cfg.input).value.trim(); if(!val) return;
-          I[cfg.key].push({text:val, note:''}); $(cfg.input).value=''; touch(); renderIdea();
+        $(cfg.addBtn).onclick = () => {
+          const val = $(cfg.input).value.trim(); if (!val) return;
+          I[cfg.key].push({ text: val, note: '' }); $(cfg.input).value = ''; touch(); renderIdea();
         };
       });
     }
 
-    function renderProjects(){
+    function renderProjects() {
       const tbody = $('#projectsTable tbody'); tbody.innerHTML = '';
-      projects.sort((a,b)=>b.updatedAt - a.updatedAt).forEach(p=>{
-        let total=0, done=0; p.template.forEach(sec=>sec.items.forEach(it=>{total++; if(it.done) done++}))
-        const pct = total? Math.round(done/total*100) : 0;
+      projects.sort((a, b) => b.updatedAt - a.updatedAt).forEach(p => {
+        let total = 0, done = 0; p.template.forEach(sec => sec.items.forEach(it => { total++; if (it.done) done++ }))
+        const pct = total ? Math.round(done / total * 100) : 0;
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td>${p.id===activeId ? '⭐ ' : ''}${escapeHtml(p.title)}</td>
-          <td><span class="status-dot ${pct===100?'green':pct>0?'yellow':'red'}"></span>${pct}%</td>
+          <td>${p.id === activeId ? '⭐ ' : ''}${escapeHtml(p.title)}</td>
+          <td><span class="status-dot ${pct === 100 ? 'green' : pct > 0 ? 'yellow' : 'red'}"></span>${pct}%</td>
           <td>${fmtDate(p.updatedAt)}</td>
-          <td>${p.revealDate||''} ${p.revealTime||''}</td>
-          <td>${p.archived? 'Archived' : 'Active'}</td>
+          <td>${p.revealDate || ''} ${p.revealTime || ''}</td>
+          <td>${p.archived ? 'Archived' : 'Active'}</td>
           <td>
             <button class="ghost" data-act="load" data-id="${p.id}">Open</button>
             <button class="ghost" data-act="dup" data-id="${p.id}">Duplicate</button>
-            <button class="ghost" data-act="tog" data-id="${p.id}">${p.archived?'Unarchive':'Archive'}</button>
+            <button class="ghost" data-act="tog" data-id="${p.id}">${p.archived ? 'Unarchive' : 'Archive'}</button>
             <button class="danger" data-act="del" data-id="${p.id}">Delete</button>
           </td>`;
         tbody.appendChild(tr);
       });
       $('#projectCount').textContent = `${projects.length} total`;
 
-      $$('#projectsTable [data-act]').forEach(btn=>{
-        btn.onclick = ()=>{
-          const act = btn.dataset.act; const id = btn.dataset.id; const idx = projects.findIndex(x=>x.id===id);
-          if(idx<0) return;
-          if(act==='load'){ activeId=id; persist(); switchTab('checklist'); }
-          if(act==='dup'){
-            const clone = structuredClone(projects[idx]); clone.id=uid(); clone.title = clone.title + ' (Copy)'; clone.createdAt=Date.now(); clone.updatedAt=Date.now();
-            projects.unshift(clone); activeId=clone.id; persist(); switchTab('checklist');
+      $$('#projectsTable [data-act]').forEach(btn => {
+        btn.onclick = () => {
+          const act = btn.dataset.act; const id = btn.dataset.id; const idx = projects.findIndex(x => x.id === id);
+          if (idx < 0) return;
+          if (act === 'load') { activeId = id; persist(); switchTab('checklist'); }
+          if (act === 'dup') {
+            const clone = structuredClone(projects[idx]); clone.id = uid(); clone.title = clone.title + ' (Copy)'; clone.createdAt = Date.now(); clone.updatedAt = Date.now();
+            projects.unshift(clone); activeId = clone.id; persist(); switchTab('checklist');
           }
-          if(act==='tog'){ projects[idx].archived = !projects[idx].archived; projects[idx].updatedAt=Date.now(); persist(); }
-          if(act==='del'){
-            if(!confirm('Delete this project? This cannot be undone.')) return;
-            const wasActive = projects[idx].id===activeId; projects.splice(idx,1); if(wasActive){ activeId = projects[0]?.id || null; }
+          if (act === 'tog') { projects[idx].archived = !projects[idx].archived; projects[idx].updatedAt = Date.now(); persist(); }
+          if (act === 'del') {
+            if (!confirm('Delete this project? This cannot be undone.')) return;
+            const wasActive = projects[idx].id === activeId; projects.splice(idx, 1); if (wasActive) { activeId = projects[0]?.id || null; }
             persist();
           }
         }
       });
     }
 
-    function escapeHtml(s){ return s.replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c])) }
+    function escapeHtml(s) { return s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#039;" }[c])) }
 
     // ======== Buttons / Global Actions ========
     document.getElementById('saveSnapshotBtn').onclick = () => {
@@ -565,19 +934,19 @@
       persist();
     };
 
-    document.getElementById('newProjectBtn').onclick = ()=>{
-      const title = prompt('New project title?'); if(!title) return;
+    document.getElementById('newProjectBtn').onclick = () => {
+      const title = prompt('New project title?'); if (!title) return;
       const p = newProject(title); projects.unshift(p); activeId = p.id; persist(); switchTab('checklist');
     };
 
-    document.getElementById('duplicateBtn').onclick = ()=>{
-      const p = getActive(); if(!p) return;
-      const clone = structuredClone(p); clone.id=uid(); clone.title = p.title + ' (Copy)'; clone.createdAt=Date.now(); clone.updatedAt=Date.now();
+    document.getElementById('duplicateBtn').onclick = () => {
+      const p = getActive(); if (!p) return;
+      const clone = structuredClone(p); clone.id = uid(); clone.title = p.title + ' (Copy)'; clone.createdAt = Date.now(); clone.updatedAt = Date.now();
       projects.unshift(clone); activeId = clone.id; persist(); switchTab('checklist');
     };
 
-    document.getElementById('resetTemplateBtn').onclick = ()=>{
-      if(!confirm('Reset the checklist for this project to the default template?')) return;
+    document.getElementById('resetTemplateBtn').onclick = () => {
+      if (!confirm('Reset the checklist for this project to the default template?')) return;
       const p = getActive(); if (!p) return;
       p.template = structuredClone(DEFAULT_TEMPLATE);
       p.updatedAt = Date.now();
@@ -585,25 +954,25 @@
       persist();
     };
 
-    document.getElementById('exportBtn').onclick = ()=>{
-      const data = { version:1, exportedAt: Date.now(), projects };
-      const name = `stranger-app-notebook_${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.json`;
-      const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+    document.getElementById('exportBtn').onclick = () => {
+      const data = { version: 1, exportedAt: Date.now(), projects };
+      const name = `stranger-app-notebook_${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.json`;
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); document.body.removeChild(a);
       URL.revokeObjectURL(url);
     };
 
-    document.getElementById('importBtn').onclick = ()=> document.getElementById('fileInput').click();
-    document.getElementById('fileInput').addEventListener('change', (e)=>{
-      const file = e.target.files[0]; if(!file) return;
+    document.getElementById('importBtn').onclick = () => document.getElementById('fileInput').click();
+    document.getElementById('fileInput').addEventListener('change', (e) => {
+      const file = e.target.files[0]; if (!file) return;
       const reader = new FileReader();
-      reader.onload = ()=>{
-        try{
+      reader.onload = () => {
+        try {
           const data = JSON.parse(reader.result);
-          if(!data.projects || !Array.isArray(data.projects)) throw new Error('Invalid file');
+          if (!data.projects || !Array.isArray(data.projects)) throw new Error('Invalid file');
           projects = data.projects; activeId = projects[0]?.id || null; persist(); switchTab('checklist');
-        }catch(err){ alert('Import failed: '+err.message) }
+        } catch (err) { alert('Import failed: ' + err.message) }
       };
       reader.readAsText(file);
     });
@@ -612,4 +981,5 @@
     render();
   </script>
 </body>
+
 </html>
